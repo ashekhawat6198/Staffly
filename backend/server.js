@@ -12,7 +12,9 @@ const app=express();
 
 app.use(express.json());    // This allows Express to read JSON data from the request body.
 app.use(express.urlencoded({ extended: true }));   // This allows Express to read form data (HTML forms).
+
 app.use("/api/auth", authRoutes);
+
 
 const PORT=process.env.PORT || 5000;
 

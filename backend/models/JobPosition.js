@@ -1,3 +1,4 @@
+
 const JobPositionSchema = new mongoose.Schema({
   title: { type: String, required: true },
   department: { type: mongoose.Schema.Types.ObjectId, ref: 'Department', required: true },
