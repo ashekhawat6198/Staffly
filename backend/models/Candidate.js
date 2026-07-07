@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const CandidateSchema = new mongoose.Schema({
   jobPosition: { type: mongoose.Schema.Types.ObjectId, ref: 'JobPosition', required: true },
   firstName: { type: String, required: true },

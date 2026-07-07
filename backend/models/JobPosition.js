@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 
 const JobPositionSchema = new mongoose.Schema({
   title: { type: String, required: true },

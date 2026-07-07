@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const EmployeeSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true, required: true }, // 1:1 Relationship
   employeeId: { type: String, required: true, unique: true }, // Custom ID like EMP001

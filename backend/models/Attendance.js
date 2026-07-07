@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const AttendanceSchema = new mongoose.Schema({
   employee: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee', required: true },
   date: { type: Date, required: true }, // Keeps track of the day (YYYY-MM-DD format ideally)

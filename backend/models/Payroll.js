@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 const PayrollSchema = new mongoose.Schema({
   employee: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee', required: true },
   month: { type: Number, required: true }, // 1 to 12

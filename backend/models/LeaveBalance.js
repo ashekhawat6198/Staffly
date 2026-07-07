@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const LeaveBalanceSchema = new mongoose.Schema({
   employee: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee', required: true },
   year: { type: Number, required: true }, // e.g., 2026
