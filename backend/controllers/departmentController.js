@@ -19,7 +19,7 @@ const createDeartment = async (req, res) => {
 // get all departments
 const getAllDepartments = async (req, res) => {
   try {
-    const departments = await Department.find()
+    const departments = await Department.find()     //"Get all departments, and for each one, replace the manager's ID with their actual first and last name, then sort the whole list alphabetically by department name."
       .populate("manager", "firstName lastName")
       .sort({ name: 1 });
     res.json(departments);
