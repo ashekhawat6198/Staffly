@@ -1,6 +1,14 @@
 import Attendance from "../models/attendanceModel.js";
 import Employee from "../models/employeeModel.js";
 
+
+// Helper: get today's date with time stripped (midnight) for consistent day-matching
+const getStartOfDay = (date = new Date()) => {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
 // check-in for the day
 
 const checkIn = async (req, res) => {
