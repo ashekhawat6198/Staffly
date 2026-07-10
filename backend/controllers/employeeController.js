@@ -1,12 +1,11 @@
-const bcrypt = require('bcryptjs');
-const Employee = require('../models/Employee');
-const User = require('../models/User');
-
+import bcrypt from "bcryptjs";
+import Employee from "../models/Employee.js";
+import User from "../models/User.js";
 
 const createEmployee = async (req, res) => {
   try {
     const {
-      email, password, role, // for User account
+      email, password, role,
       firstName, lastName, phone, address, dateOfBirth, gender,
       employeeId, department, jobPosition, reportingTo,
       dateOfJoining, employmentType, baseSalary
@@ -15,13 +14,13 @@ const createEmployee = async (req, res) => {
     // 1. Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: 'User with this email already exists' });
+      return res.status(400).json({ message: "User with this email already exists" });
     }
 
     // 2. Check if employeeId already exists
     const empIdExists = await Employee.findOne({ employeeId });
     if (empIdExists) {
-      return res.status(400).json({ message: 'Employee ID already in use' });
+      return res.status(400).json({ message: "Employee ID already in use" });
     }
 
     // 3. Create User account
@@ -31,7 +30,7 @@ const createEmployee = async (req, res) => {
     const user = await User.create({
       email,
       password: hashedPassword,
-      role: role || 'employee'
+      role: role || "employee"
     });
 
     // 4. Create Employee profile linked to that User
@@ -53,10 +52,10 @@ const createEmployee = async (req, res) => {
     });
 
     const populatedEmployee = await Employee.findById(employee._id)
-      .populate('department', 'name')
-      .populate('jobPosition', 'title')
-      .populate('reportingTo', 'firstName lastName')
-      .populate('user', 'email role');
+      .populate("department", "name")
+      .populate("jobPosition", "title")
+      .populate("reportingTo", "firstName lastName")
+      .populate("user", "email role");
 
     res.status(201).json(populatedEmployee);
   } catch (error) {
@@ -74,10 +73,10 @@ const getEmployees = async (req, res) => {
     if (employmentType) filter.employmentType = employmentType;
 
     const employees = await Employee.find(filter)
-      .populate('department', 'name')
-      .populate('jobPosition', 'title')
-      .populate('reportingTo', 'firstName lastName')
-      .populate('user', 'email role isActive')
+      .populate("department", "name")
+      .populate("jobPosition", "title")
+      .populate("reportingTo", "firstName lastName")
+      .populate("user", "email role isActive")
       .sort({ createdAt: -1 });
 
     res.json(employees);
@@ -86,17 +85,16 @@ const getEmployees = async (req, res) => {
   }
 };
 
-
 const getEmployeeById = async (req, res) => {
   try {
     const employee = await Employee.findById(req.params.id)
-      .populate('department', 'name')
-      .populate('jobPosition', 'title')
-      .populate('reportingTo', 'firstName lastName')
-      .populate('user', 'email role isActive');
+      .populate("department", "name")
+      .populate("jobPosition", "title")
+      .populate("reportingTo", "firstName lastName")
+      .populate("user", "email role isActive");
 
     if (!employee) {
-      return res.status(404).json({ message: 'Employee not found' });
+      return res.status(404).json({ message: "Employee not found" });
     }
 
     res.json(employee);
@@ -105,17 +103,15 @@ const getEmployeeById = async (req, res) => {
   }
 };
 
-
-// access Any authenticated user
 const getMyProfile = async (req, res) => {
   try {
     const employee = await Employee.findOne({ user: req.user.id })
-      .populate('department', 'name')
-      .populate('jobPosition', 'title')
-      .populate('reportingTo', 'firstName lastName');
+      .populate("department", "name")
+      .populate("jobPosition", "title")
+      .populate("reportingTo", "firstName lastName");
 
     if (!employee) {
-      return res.status(404).json({ message: 'Employee profile not found' });
+      return res.status(404).json({ message: "Employee profile not found" });
     }
 
     res.json(employee);
@@ -123,20 +119,19 @@ const getMyProfile = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 const updateEmployee = async (req, res) => {
   try {
     const employee = await Employee.findById(req.params.id);
 
     if (!employee) {
-      return res.status(404).json({ message: 'Employee not found' });
+      return res.status(404).json({ message: "Employee not found" });
     }
 
     const updatableFields = [
-      'firstName', 'lastName', 'phone', 'address', 'dateOfBirth', 'gender',
-      'department', 'jobPosition', 'reportingTo', 'employmentType',
-      'baseSalary', 'status', 'profilePicture'
+      "firstName", "lastName", "phone", "address", "dateOfBirth", "gender",
+      "department", "jobPosition", "reportingTo", "employmentType",
+      "baseSalary", "status", "profilePicture"
     ];
 
     updatableFields.forEach((field) => {
@@ -148,9 +143,9 @@ const updateEmployee = async (req, res) => {
     await employee.save();
 
     const updatedEmployee = await Employee.findById(employee._id)
-      .populate('department', 'name')
-      .populate('jobPosition', 'title')
-      .populate('reportingTo', 'firstName lastName');
+      .populate("department", "name")
+      .populate("jobPosition", "title")
+      .populate("reportingTo", "firstName lastName");
 
     res.json(updatedEmployee);
   } catch (error) {
@@ -158,28 +153,26 @@ const updateEmployee = async (req, res) => {
   }
 };
 
-// Admin only
 const deactivateEmployee = async (req, res) => {
   try {
     const employee = await Employee.findById(req.params.id);
 
     if (!employee) {
-      return res.status(404).json({ message: 'Employee not found' });
+      return res.status(404).json({ message: "Employee not found" });
     }
 
-    employee.status = 'terminated';
+    employee.status = "terminated";
     await employee.save();
 
-    // Also deactivate their login access
     await User.findByIdAndUpdate(employee.user, { isActive: false });
 
-    res.json({ message: 'Employee deactivated successfully' });
+    res.json({ message: "Employee deactivated successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = {
+export {
   createEmployee,
   getEmployees,
   getEmployeeById,

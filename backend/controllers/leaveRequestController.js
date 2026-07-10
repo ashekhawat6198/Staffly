@@ -1,8 +1,8 @@
-const LeaveRequest = require('../models/LeaveRequest');
-const LeaveBalance = require('../models/LeaveBalance');
-const Employee = require('../models/Employee');
+import LeaveRequest from "../models/LeaveRequest.js";
+import LeaveBalance from "../models/LeaveBalance.js";
+import Employee from "../models/Employee.js";
 
-//calculate total days between two dates (inclusive)
+// calculate total days between two dates (inclusive)
 const calculateDays = (startDate, endDate) => {
   const start = new Date(startDate);
   const end = new Date(endDate);
@@ -11,28 +11,27 @@ const calculateDays = (startDate, endDate) => {
   return diffDays;
 };
 
-//Apply for leave
+// Apply for leave
 const applyLeave = async (req, res) => {
   try {
     const employee = await Employee.findOne({ user: req.user.id });
     if (!employee) {
-      return res.status(404).json({ message: 'Employee profile not found' });
+      return res.status(404).json({ message: "Employee profile not found" });
     }
 
     const { leaveType, startDate, endDate, reason } = req.body;
 
     if (new Date(startDate) > new Date(endDate)) {
-      return res.status(400).json({ message: 'Start date cannot be after end date' });
+      return res.status(400).json({ message: "Start date cannot be after end date" });
     }
 
     const totalDays = calculateDays(startDate, endDate);
     const year = new Date(startDate).getFullYear();
 
     // Check leave balance (skip check for unpaid leave)
-    if (leaveType !== 'unpaid') {
+    if (leaveType !== "unpaid") {
       let balance = await LeaveBalance.findOne({ employee: employee._id, year });
 
-      // Auto-create balance record if it doesn't exist yet
       if (!balance) {
         balance = await LeaveBalance.create({ employee: employee._id, year });
       }
@@ -52,7 +51,7 @@ const applyLeave = async (req, res) => {
       endDate,
       totalDays,
       reason,
-      status: 'pending'
+      status: "pending"
     });
 
     res.status(201).json(leaveRequest);
@@ -61,12 +60,12 @@ const applyLeave = async (req, res) => {
   }
 };
 
-//Get logged-in employee's own leave requests
+// Get logged-in employee's own leave requests
 const getMyLeaves = async (req, res) => {
   try {
     const employee = await Employee.findOne({ user: req.user.id });
     if (!employee) {
-      return res.status(404).json({ message: 'Employee profile not found' });
+      return res.status(404).json({ message: "Employee profile not found" });
     }
 
     const leaves = await LeaveRequest.find({ employee: employee._id }).sort({ createdAt: -1 });
@@ -76,7 +75,7 @@ const getMyLeaves = async (req, res) => {
   }
 };
 
-//Get all leave requests (admin/hr/manager), with filters
+// Get all leave requests (admin/hr/manager), with filters
 const getAllLeaves = async (req, res) => {
   try {
     const { status, employee, leaveType } = req.query;
@@ -87,8 +86,8 @@ const getAllLeaves = async (req, res) => {
     if (leaveType) filter.leaveType = leaveType;
 
     const leaves = await LeaveRequest.find(filter)
-      .populate('employee', 'firstName lastName employeeId department')
-      .populate('approvedBy', 'firstName lastName')
+      .populate("employee", "firstName lastName employeeId department")
+      .populate("approvedBy", "firstName lastName")
       .sort({ createdAt: -1 });
 
     res.json(leaves);
@@ -97,34 +96,32 @@ const getAllLeaves = async (req, res) => {
   }
 };
 
-//Approve or reject a leave request
+// Approve or reject a leave request
 const updateLeaveStatus = async (req, res) => {
   try {
-    const { status, rejectionReason } = req.body; // 'approved' or 'rejected'
+    const { status, rejectionReason } = req.body;
 
-    if (!['approved', 'rejected'].includes(status)) {
-      return res.status(400).json({ message: 'Status must be approved or rejected' });
+    if (!["approved", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Status must be approved or rejected" });
     }
 
     const leaveRequest = await LeaveRequest.findById(req.params.id);
     if (!leaveRequest) {
-      return res.status(404).json({ message: 'Leave request not found' });
+      return res.status(404).json({ message: "Leave request not found" });
     }
 
-    if (leaveRequest.status !== 'pending') {
+    if (leaveRequest.status !== "pending") {
       return res.status(400).json({ message: `Leave request is already ${leaveRequest.status}` });
     }
 
-    // Find the approver's employee record (the logged-in manager/hr/admin)
     const approver = await Employee.findOne({ user: req.user.id });
 
     leaveRequest.status = status;
     leaveRequest.approvedBy = approver ? approver._id : null;
     leaveRequest.approvedAt = new Date();
-    if (status === 'rejected') leaveRequest.rejectionReason = rejectionReason;
+    if (status === "rejected") leaveRequest.rejectionReason = rejectionReason;
 
-    // If approved and it's a paid leave type, deduct from balance
-    if (status === 'approved' && leaveRequest.leaveType !== 'unpaid') {
+    if (status === "approved" && leaveRequest.leaveType !== "unpaid") {
       const year = new Date(leaveRequest.startDate).getFullYear();
       let balance = await LeaveBalance.findOne({ employee: leaveRequest.employee, year });
 
@@ -143,25 +140,25 @@ const updateLeaveStatus = async (req, res) => {
   }
 };
 
-//Cancel a leave request (only if still pending, by the employee themselves)
+// Cancel a leave request
 const cancelLeave = async (req, res) => {
   try {
     const employee = await Employee.findOne({ user: req.user.id });
     const leaveRequest = await LeaveRequest.findById(req.params.id);
 
     if (!leaveRequest) {
-      return res.status(404).json({ message: 'Leave request not found' });
+      return res.status(404).json({ message: "Leave request not found" });
     }
 
     if (leaveRequest.employee.toString() !== employee._id.toString()) {
-      return res.status(403).json({ message: 'Not authorized to cancel this request' });
+      return res.status(403).json({ message: "Not authorized to cancel this request" });
     }
 
-    if (leaveRequest.status !== 'pending') {
-      return res.status(400).json({ message: 'Only pending requests can be cancelled' });
+    if (leaveRequest.status !== "pending") {
+      return res.status(400).json({ message: "Only pending requests can be cancelled" });
     }
 
-    leaveRequest.status = 'cancelled';
+    leaveRequest.status = "cancelled";
     await leaveRequest.save();
 
     res.json(leaveRequest);
@@ -170,12 +167,12 @@ const cancelLeave = async (req, res) => {
   }
 };
 
-// Get leave balance for logged-in employee
+// Get leave balance
 const getMyLeaveBalance = async (req, res) => {
   try {
     const employee = await Employee.findOne({ user: req.user.id });
     if (!employee) {
-      return res.status(404).json({ message: 'Employee profile not found' });
+      return res.status(404).json({ message: "Employee profile not found" });
     }
 
     const year = req.query.year || new Date().getFullYear();
@@ -191,7 +188,7 @@ const getMyLeaveBalance = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   applyLeave,
   getMyLeaves,
   getAllLeaves,
