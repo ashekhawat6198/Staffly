@@ -1,13 +1,13 @@
-const Candidate = require('../models/Candidate');
+import Candidate from "../models/Candidate.js";
 
-//Create/add a new candidate
+// Create/add a new candidate
 const createCandidate = async (req, res) => {
   try {
     const { name, email, phone, resumeUrl, appliedFor } = req.body;
 
     const exists = await Candidate.findOne({ email, appliedFor });
     if (exists) {
-      return res.status(400).json({ message: 'Candidate already applied for this position' });
+      return res.status(400).json({ message: "Candidate already applied for this position" });
     }
 
     const candidate = await Candidate.create({
@@ -16,7 +16,7 @@ const createCandidate = async (req, res) => {
       phone,
       resumeUrl,
       appliedFor,
-      status: 'applied'
+      status: "applied"
     });
 
     res.status(201).json(candidate);
@@ -25,7 +25,7 @@ const createCandidate = async (req, res) => {
   }
 };
 
-//Get all candidates (with filters)
+// Get all candidates (with filters)
 const getCandidates = async (req, res) => {
   try {
     const { status, appliedFor } = req.query;
@@ -36,11 +36,11 @@ const getCandidates = async (req, res) => {
 
     const candidates = await Candidate.find(filter)
       .populate({
-        path: 'appliedFor',
-        select: 'title department',
-        populate: { path: 'department', select: 'name' }
+        path: "appliedFor",
+        select: "title department",
+        populate: { path: "department", select: "name" }
       })
-      .sort({ fitScore: -1, createdAt: -1 }); // best fit first
+      .sort({ fitScore: -1, createdAt: -1 });
 
     res.json(candidates);
   } catch (error) {
@@ -48,14 +48,14 @@ const getCandidates = async (req, res) => {
   }
 };
 
-//Get single candidate
+// Get single candidate
 const getCandidateById = async (req, res) => {
   try {
     const candidate = await Candidate.findById(req.params.id)
-      .populate('appliedFor', 'title department');
+      .populate("appliedFor", "title department");
 
     if (!candidate) {
-      return res.status(404).json({ message: 'Candidate not found' });
+      return res.status(404).json({ message: "Candidate not found" });
     }
 
     res.json(candidate);
@@ -64,19 +64,19 @@ const getCandidateById = async (req, res) => {
   }
 };
 
-//Update candidate status (screening, interview, offered, hired, rejected)
+// Update candidate status
 const updateCandidateStatus = async (req, res) => {
   try {
     const { status } = req.body;
-    const validStatuses = ['applied', 'screening', 'interview', 'offered', 'hired', 'rejected'];
+    const validStatuses = ["applied", "screening", "interview", "offered", "hired", "rejected"];
 
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: 'Invalid status value' });
+      return res.status(400).json({ message: "Invalid status value" });
     }
 
     const candidate = await Candidate.findById(req.params.id);
     if (!candidate) {
-      return res.status(404).json({ message: 'Candidate not found' });
+      return res.status(404).json({ message: "Candidate not found" });
     }
 
     candidate.status = status;
@@ -88,17 +88,15 @@ const updateCandidateStatus = async (req, res) => {
   }
 };
 
-//Update candidate details (e.g. after AI parses resume)
+// Update candidate details
 const updateCandidate = async (req, res) => {
   try {
     const candidate = await Candidate.findById(req.params.id);
     if (!candidate) {
-      return res.status(404).json({ message: 'Candidate not found' });
+      return res.status(404).json({ message: "Candidate not found" });
     }
 
-    const updatableFields = [
-      'name', 'phone', 'resumeUrl', 'parsedSkills', 'parsedExperience', 'fitScore'
-    ];
+    const updatableFields = ["name", "phone", "resumeUrl", "parsedSkills", "parsedExperience", "fitScore"];
 
     updatableFields.forEach((field) => {
       if (req.body[field] !== undefined) {
@@ -113,22 +111,22 @@ const updateCandidate = async (req, res) => {
   }
 };
 
-//Delete candidate
+// Delete candidate
 const deleteCandidate = async (req, res) => {
   try {
     const candidate = await Candidate.findById(req.params.id);
     if (!candidate) {
-      return res.status(404).json({ message: 'Candidate not found' });
+      return res.status(404).json({ message: "Candidate not found" });
     }
 
     await candidate.deleteOne();
-    res.json({ message: 'Candidate deleted successfully' });
+    res.json({ message: "Candidate deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = {
+export {
   createCandidate,
   getCandidates,
   getCandidateById,

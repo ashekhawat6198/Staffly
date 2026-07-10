@@ -1,5 +1,4 @@
-const JobPosition = require('../models/JobPosition');
-
+import JobPosition from "../models/JobPosition.js";
 
 // access Admin, HR
 const createJobPosition = async (req, res) => {
@@ -13,14 +12,13 @@ const createJobPosition = async (req, res) => {
   }
 };
 
-
 const getJobPositions = async (req, res) => {
   try {
     const filter = {};
     if (req.query.department) filter.department = req.query.department;
 
     const jobPositions = await JobPosition.find(filter)
-      .populate('department', 'name')
+      .populate("department", "name")
       .sort({ title: 1 });
 
     res.json(jobPositions);
@@ -32,10 +30,10 @@ const getJobPositions = async (req, res) => {
 const getJobPositionById = async (req, res) => {
   try {
     const jobPosition = await JobPosition.findById(req.params.id)
-      .populate('department', 'name');
+      .populate("department", "name");
 
     if (!jobPosition) {
-      return res.status(404).json({ message: 'Job position not found' });
+      return res.status(404).json({ message: "Job position not found" });
     }
 
     res.json(jobPosition);
@@ -44,14 +42,13 @@ const getJobPositionById = async (req, res) => {
   }
 };
 
-
 // access Admin, HR
 const updateJobPosition = async (req, res) => {
   try {
     const jobPosition = await JobPosition.findById(req.params.id);
 
     if (!jobPosition) {
-      return res.status(404).json({ message: 'Job position not found' });
+      return res.status(404).json({ message: "Job position not found" });
     }
 
     const { title, department, description } = req.body;
@@ -66,24 +63,23 @@ const updateJobPosition = async (req, res) => {
   }
 };
 
-
 // access Admin only
 const deleteJobPosition = async (req, res) => {
   try {
     const jobPosition = await JobPosition.findById(req.params.id);
 
     if (!jobPosition) {
-      return res.status(404).json({ message: 'Job position not found' });
+      return res.status(404).json({ message: "Job position not found" });
     }
 
     await jobPosition.deleteOne();
-    res.json({ message: 'Job position deleted successfully' });
+    res.json({ message: "Job position deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = {
+export {
   createJobPosition,
   getJobPositions,
   getJobPositionById,
