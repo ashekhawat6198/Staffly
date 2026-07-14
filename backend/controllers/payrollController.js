@@ -246,7 +246,7 @@ const deletePayroll=async(req,res)=>{
   }
 }
 
-module.exports={
+export{
   generatePayroll,
   getAllPayroll,
   getMyPayroll,

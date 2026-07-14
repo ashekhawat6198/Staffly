@@ -1,16 +1,15 @@
 import express from "express";
 const router=express.Router();
 
-const{
+import{
     createEmployee,
   getEmployees,
   getEmployeeById,
   getMyProfile,
   updateEmployee,
   deactivateEmployee
-}
-
-const { protect, authorize } = require('../middleware/authMiddleware');
+} from "../controllers/employeeController.js"
+import { authorize,protect } from "../middlewares/authMiddleware.js";
 
 router.get('/me', protect, getMyProfile);
 
@@ -20,4 +19,4 @@ router.get('/:id', protect, getEmployeeById);
 router.put('/:id', protect, authorize('admin', 'hr'), updateEmployee);
 router.delete('/:id', protect, authorize('admin'), deactivateEmployee);
 
-module.exports = router;
+export default router;

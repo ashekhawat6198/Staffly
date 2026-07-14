@@ -9,4 +9,6 @@ const CandidateSchema = new mongoose.Schema({
   status: { type: String, enum: ['Applied', 'Screening', 'Interviewing', 'Offered', 'Rejected'], default: 'Applied' }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Candidate', CandidateSchema);
+const Candidate = mongoose.model("Candidate", CandidateSchema);
+
+export default Candidate;

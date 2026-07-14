@@ -1,7 +1,7 @@
-import Department from "../models/Department";
+import Department from "../models/Department.js";
 
 // create a new department
-const createDeartment = async (req, res) => {
+const createDepartment = async (req, res) => {
   try {
     const { name, description, manager } = req.body;
     const exists = await Department.findOne({ name });
@@ -82,8 +82,8 @@ const deleteDepartment = async (req, res) => {
   }
 };
 
-module.exports = {
-  createDeartment,
+export  {
+  createDepartment,
   getAllDepartments,
     getDepartmentById,
     updateDepartment,

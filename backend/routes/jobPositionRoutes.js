@@ -6,7 +6,7 @@ import {
   updateJobPosition,
   deleteJobPosition
 } from "../controllers/jobPositionController.js";
-import { protect, authorize } from "../middleware/authMiddleware.js";
+import { protect, authorize } from "../middlewares/authMiddleware.js"
 
 const router = express.Router();
 

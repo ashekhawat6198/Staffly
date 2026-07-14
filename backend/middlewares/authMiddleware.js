@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 // Verify JWT and attach user info to request
-const protect = (req, res, next) => {
+export const protect = (req, res, next) => {
   let token;
 
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
@@ -21,7 +21,7 @@ const protect = (req, res, next) => {
 };
 
 // Restrict access based on role
-const authorize = (...roles) => {
+export const authorize = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
@@ -32,4 +32,3 @@ const authorize = (...roles) => {
   };
 };
 
-export { protect, authorize };

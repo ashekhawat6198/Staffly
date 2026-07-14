@@ -7,4 +7,6 @@ const JobPositionSchema = new mongoose.Schema({
   status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' }
 }, { timestamps: true });
 
-module.exports = mongoose.model('JobPosition', JobPositionSchema);
+const JobPosition = mongoose.model("JobPosition", JobPositionSchema);
+
+export default JobPosition;

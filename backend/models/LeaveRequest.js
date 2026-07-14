@@ -9,4 +9,6 @@ const LeaveRequestSchema = new mongoose.Schema({
   approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' }
 }, { timestamps: true });
 
-module.exports = mongoose.model('LeaveRequest', LeaveRequestSchema);
+const LeaveRequest = mongoose.model("LeaveRequest", LeaveRequestSchema);
+
+export default LeaveRequest;

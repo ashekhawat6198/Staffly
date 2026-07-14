@@ -3,7 +3,7 @@ const router=express.Router();
 
 import {
     createDepartment,
-  getDepartments,
+  getAllDepartments,
   getDepartmentById,
   updateDepartment,
   deleteDepartment
@@ -13,10 +13,10 @@ import {protect,authorize} from "../middlewares/authMiddleware.js"
 
 
 router.post('/',protect,authorize('admin','hr'),createDepartment);
-router.get('/',protect,getDepartments);
+router.get('/',protect,getAllDepartments);
 router.get('/:id',protect,getDepartmentById);
 router.put('/:id', protect, authorize('admin', 'hr'), updateDepartment);
 router.delete('/:id', protect, authorize('admin'), deleteDepartment);
 
 
-module.exports = router;
+export default router;

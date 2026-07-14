@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const EmployeeSchema = new mongoose.Schema({
+const employeeSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true, required: true }, // 1:1 Relationship
   employeeId: { type: String, required: true, unique: true }, // Custom ID like EMP001
   firstName: { type: String, required: true },
@@ -15,4 +15,6 @@ const EmployeeSchema = new mongoose.Schema({
   reportingTo: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee', default: null } // Self-reference (1:N)
 }, { timestamps: true });
 
-module.exports = mongoose.model('Employee', EmployeeSchema);
+const Employee = mongoose.model("Employee", employeeSchema);
+
+export default Employee;

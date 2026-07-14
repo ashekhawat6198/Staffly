@@ -19,4 +19,4 @@ router.put('/:id', protect, authorize('admin', 'hr'), updateCandidate);
 router.put('/:id/status', protect, authorize('admin', 'hr'), updateCandidateStatus);
 router.delete('/:id', protect, authorize('admin'), deleteCandidate);
 
-module.exports = router;
+export default router;

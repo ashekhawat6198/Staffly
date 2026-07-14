@@ -18,4 +18,6 @@ const LeaveBalanceSchema = new mongoose.Schema({
 // Enforces one balance document per employee per year
 LeaveBalanceSchema.index({ employee: 1, year: 1 }, { unique: true });
 
-module.exports = mongoose.model('LeaveBalance', LeaveBalanceSchema);
+const LeaveBalance = mongoose.model("LeaveBalance", LeaveBalanceSchema);
+
+export default LeaveBalance;

@@ -7,7 +7,7 @@ import {
   cancelLeave,
   getMyLeaveBalance
 } from "../controllers/leaveController.js";
-import { protect, authorize } from "../middleware/authMiddleware.js";
+import { protect, authorize } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -17,5 +17,4 @@ router.get("/balance", protect, getMyLeaveBalance);
 router.get("/", protect, authorize("admin", "hr", "manager"), getAllLeaves);
 router.put("/:id/status", protect, authorize("admin", "hr", "manager"), updateLeaveStatus);
 router.put("/:id/cancel", protect, cancelLeave);
-
 export default router;

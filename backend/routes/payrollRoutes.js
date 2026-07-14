@@ -10,7 +10,7 @@ import {
   deletePayroll
 } from "../controllers/payrollController.js"
 
-const { protect, authorize } = require('../middleware/authMiddleware');
+import { protect, authorize } from "../middlewares/authMiddleware.js";
 
 
 // IMPORTANT: '/me' must come before '/:id', otherwise Express treats
@@ -23,4 +23,4 @@ router.get('/:id', protect, getPayrollById);
 router.put('/:id/status', protect, authorize('admin', 'hr'), updatePayrollStatus);
 router.delete('/:id', protect, authorize('admin'), deletePayroll);
 
-module.exports = router;
+export default router;

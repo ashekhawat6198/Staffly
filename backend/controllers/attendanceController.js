@@ -1,5 +1,5 @@
-import Attendance from "../models/attendanceModel.js";
-import Employee from "../models/employeeModel.js";
+import Attendance from "../models/Attendance.js";
+import Employee from "../models/Employee.js";
 
 
 // Helper: get today's date with time stripped (midnight) for consistent day-matching
@@ -176,7 +176,7 @@ const getAllAttendance = async (req, res) => {
     }
 
 
-    module.exports = {
+   export {
         checkIn,
         checkOut,   
         getMyAttendance,

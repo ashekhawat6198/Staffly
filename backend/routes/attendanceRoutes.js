@@ -18,5 +18,4 @@ router.get('/me', protect, getMyAttendance);
 router.get('/', protect, authorize('admin', 'hr', 'manager'), getAllAttendance);
 router.get('/:employeeId', protect, authorize('admin', 'hr', 'manager'), getEmployeeAttendance);
 
-
-module.exports = router;
+export default router;
