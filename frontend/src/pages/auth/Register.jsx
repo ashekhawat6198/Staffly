@@ -58,7 +58,7 @@ const Register = () => {
     e.preventDefault();
     const result = await dispatch(registerUser({ email, password, role }));
     if (registerUser.fulfilled.match(result)) {
-      navigate("/dashboard");
+      navigate("/");
     }
   }
 

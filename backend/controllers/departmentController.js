@@ -3,13 +3,13 @@ import Department from "../models/Department.js";
 // create a new department
 const createDepartment = async (req, res) => {
   try {
-    const { name, description, manager } = req.body;
+    const { name, description, manager,code } = req.body;
     const exists = await Department.findOne({ name });
     if (exists) {
       return res.status(400).json({ message: "Department already exists" });
     }
 
-    const department = await Department.create({ name, description, manager });
+    const department = await Department.create({ name, description, manager,code });
     res.status(201).json(department);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -54,10 +54,11 @@ const updateDepartment = async (req, res) => {
     if (!department) {
       return res.status(404).json({ message: "Department not found" });
     }
-     const { name, description, manager } = req.body;
+     const { name, description, manager,code } = req.body;
     if (name !== undefined) department.name = name;
     if (description !== undefined) department.description = description;
     if (manager !== undefined) department.manager = manager;
+     if (code !== undefined) department.code = code;
      await department.save();
     res.json(department);
   } catch (erroor) {

@@ -2,38 +2,53 @@ import bcrypt from "bcryptjs";
 import Employee from "../models/Employee.js";
 import User from "../models/User.js";
 
-const createEmployee = async (req, res) => {
+//  Create new employee (links to existing User if already registered, else creates one)
+// @access Admin, HR
+ const createEmployee = async (req, res) => {
   try {
     const {
-      email, password, role,
+      email, password, role, // for User account (password/role only used if creating new)
       firstName, lastName, phone, address, dateOfBirth, gender,
       employeeId, department, jobPosition, reportingTo,
-      dateOfJoining, employmentType, baseSalary
+      joiningDate, employmentType, baseSalary
     } = req.body;
 
-    // 1. Check if user already exists
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: "User with this email already exists" });
-    }
-
-    // 2. Check if employeeId already exists
+    // 1. Check if employeeId already exists
     const empIdExists = await Employee.findOne({ employeeId });
     if (empIdExists) {
       return res.status(400).json({ message: "Employee ID already in use" });
     }
 
-    // 3. Create User account
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // 2. Check if a User already exists with this email
+    let user = await User.findOne({ email });
 
-    const user = await User.create({
-      email,
-      password: hashedPassword,
-      role: role || "employee"
-    });
+    if (user) {
+      // 2a. User already exists (self-registered earlier) — make sure they don't already have an Employee profile
+      const alreadyLinked = await Employee.findOne({ user: user._id });
+      if (alreadyLinked) {
+        return res.status(400).json({ message: "This user already has an employee profile" });
+      }
+      // Optionally update their role if HR wants to set/change it now
+      if (role) {
+        user.role = role;
+        await user.save();
+      }
+    } else {
+      // 2b. No existing user — create a new one (original flow)
+      if (!password) {
+        return res.status(400).json({ message: "Password is required to create a new user account" });
+      }
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 4. Create Employee profile linked to that User
+      user = await User.create({
+        email,
+        password: hashedPassword,
+        role: role || "employee",
+      });
+    }
+
+    // 3. Create Employee profile linked to that User (existing or newly created)
     const employee = await Employee.create({
       user: user._id,
       firstName,
@@ -46,7 +61,7 @@ const createEmployee = async (req, res) => {
       department,
       jobPosition,
       reportingTo: reportingTo || null,
-      dateOfJoining,
+      joiningDate,
       employmentType,
       baseSalary
     });

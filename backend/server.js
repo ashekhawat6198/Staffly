@@ -9,6 +9,7 @@ import attendanceRoutes from "./routes/attendanceRoutes.js"
 import leaveRoutes from "./routes/leaveRoutes.js"
 import candidateRoutes from "./routes/candidateRoutes.js"
 import payrollRoutes from "./routes/payrollRoutes.js"
+import dashboardRoutes from "./routes/dashboardRoutes.js"
 import cors from "cors"
 
 dotenv.config();
@@ -30,6 +31,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/leaves', leaveRoutes);
 app.use('/api/candidates', candidateRoutes);
 app.use('/api/payroll', payrollRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 
 // 404 handler — for routes that don't exist
