@@ -5,7 +5,7 @@ const Sidebar = () => {
   const { user } = useSelector((state) => state.auth);
 
   const menuItems = [
-    { label: "Dashboard", path: "/dashboard", roles: ["admin", "hr", "manager", "employee"] },
+    { label: "Dashboard", path: "/", roles: ["admin", "hr", "manager", "employee"] },
     { label: "Employees", path: "/employees", roles: ["admin", "hr", "manager"] },
     { label: "Departments", path: "/departments", roles: ["admin", "hr"] },
     { label: "Attendance", path: "/attendance", roles: ["admin", "hr", "manager", "employee"] },
@@ -18,7 +18,7 @@ const Sidebar = () => {
   const visibleItems = menuItems.filter((item) => item.roles.includes(user?.role));
 
   return (
-    <aside className="w-64 bg-[#14171F] text-white h-screen flex flex-col">
+    <aside className="w-64 bg-[#14171F] text-white  flex flex-col">
       <div className="p-6 text-xl font-['Space_Grotesk'] font-semibold border-b border-white/10">
         Staffly
       </div>

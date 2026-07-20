@@ -4,37 +4,37 @@ import User from "../models/User.js";
 
 //  Create new employee (links to existing User if already registered, else creates one)
 // @access Admin, HR
- const createEmployee = async (req, res) => {
+  const createEmployee = async (req, res) => {
   try {
     const {
-      email, password, role, // for User account (password/role only used if creating new)
+      email, password, role,
       firstName, lastName, phone, address, dateOfBirth, gender,
       employeeId, department, jobPosition, reportingTo,
       joiningDate, employmentType, baseSalary
     } = req.body;
 
-    // 1. Check if employeeId already exists
+    // NEW: enforce role-assignment permissions
+    if (role && ["admin", "hr"].includes(role) && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Only admins can assign the admin or hr role" });
+    }
+
     const empIdExists = await Employee.findOne({ employeeId });
     if (empIdExists) {
       return res.status(400).json({ message: "Employee ID already in use" });
     }
 
-    // 2. Check if a User already exists with this email
     let user = await User.findOne({ email });
 
     if (user) {
-      // 2a. User already exists (self-registered earlier) — make sure they don't already have an Employee profile
       const alreadyLinked = await Employee.findOne({ user: user._id });
       if (alreadyLinked) {
         return res.status(400).json({ message: "This user already has an employee profile" });
       }
-      // Optionally update their role if HR wants to set/change it now
       if (role) {
         user.role = role;
         await user.save();
       }
     } else {
-      // 2b. No existing user — create a new one (original flow)
       if (!password) {
         return res.status(400).json({ message: "Password is required to create a new user account" });
       }
@@ -48,7 +48,6 @@ import User from "../models/User.js";
       });
     }
 
-    // 3. Create Employee profile linked to that User (existing or newly created)
     const employee = await Employee.create({
       user: user._id,
       firstName,
